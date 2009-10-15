@@ -1,0 +1,27 @@
+function [sequences,evalResults, updateIndex] = updateSequences(dreamPar, sequences, evalResults, acceptedChild, iOffspring, iteration)
+
+wasLastPointStored = true;
+if ~dreamPar.reducedSampleCollection
+%     rNumber = size(sequences,1)-dreamPar.nOffspringPerSeq + iOffspring;  
+    updateIndex = iteration;
+    evalResults((rNumber-1)*dreamPar.nSeq+1:rNumber*dreamPar.nSeq, :) = acceptedChild;
+    for seq = 1:dreamPar.nSeq 
+        sequences(rNumber,:,seq) = acceptedChild(seq, :);
+    end
+else
+%     rNumber = size(sequences,1)- floor((mod(iteration-iOffspring,dreamPar.reducedSampleFrequency)+ dreamPar.nOffspringPerSeq)/dreamPar.reducedSampleFrequency) + ...
+%         floor((mod(iteration-iOffspring,dreamPar.reducedSampleFrequency)+
+%         iOffspring)/dreamPar.reducedSampleFrequency); 
+    if mod(iteration, dreamPar.reducedSampleFrequency) == 0
+        updateIndex = floor(iteration/dreamPar.reducedSampleFrequency);
+        evalResults((updateIndex-1)*dreamPar.nSeq+1:updateIndex*dreamPar.nSeq, :) = acceptedChild;
+        for seq = 1:dreamPar.nSeq 
+            sequences(rNumber,:,seq) = acceptedChild(seq, :);
+        end
+    else 
+        wasLastPointStored = false;
+    end
+end
+
+                      
+             

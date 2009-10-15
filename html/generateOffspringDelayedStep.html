@@ -1,0 +1,90 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>DREAM Toolbox - generateOffspringDelayedStep</title>
+
+   <meta name="keywords" content="generateOffspringDelayedStep">
+
+   <meta name="description" content="generateOffspringDelayedStep">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'generateOffspringDelayedStep'))">View source code of the function <span style="font-family:monospace">generateOffspringDelayedStep()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+generateOffspringDelayedStep
+</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<pre>propChild = generateOffspringDelayedStep(dreamPar,lastPointsFromEverySeq)</pre>
+</div>
+
+<div class="h2">
+Input arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+<li><span class="code">lastPointsFromEverySeq</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the current points in each of the chains.
+</ul>
+</div>
+
+<div class="h2">
+Output arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">propChild</span> contains the proposed points in each of the chains.
+</ul>
+</div>
+
+<div class="h2">
+Description
+</div>
+<div class="txt">
+In the case of rejection of the first proposal in a chain, a second trial move is proposed using a deflated proposal dstribution. The acceptance 
+probability of this second proposal is computed so that reversibility and detailed balance of the Markov chain are preserved. Note that the delayed 
+rejection step only considers the current location of the <span class = "code">dreamPar.nSeq</span> chains 
+(i.e <span class = "code">lastPointsFromEverySeq</span>) to compute the variance-covariance matrix of the proposal distribution. By deflating 
+the proposal distribution the average jumping distance 
+is reduced, thereby requiring more function evaluations to explore the entire target distribution.
+</div>
+
+
+<div class="txt">
+Based on the covariance matrix of the last points in every sequence, a jumping distance  is calculated as the product of:
+<ol>
+<li>a random draw from a normal distribution of dimension <span style="font-family:monospace">dreamPar.noptPars</span>;</li>
+<li>the cholesky decomposition of the covariance matrix of the last points in every sequence scaled by <span style="font-family:monospace">dreamPar.delayedRejectionScale</span>.</li>
+</ol>
+
+
+</div>
+</body>
+</html>

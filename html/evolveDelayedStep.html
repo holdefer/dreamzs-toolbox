@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+
+   <title>DREAM Toolbox - evolveDelayedStep</title>
+
+   <meta name="keywords" content="evolveDelayedStep">
+
+   <meta name="description" content="evolveDelayedStep">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'evolveDelayedStep'))">View source code of the function <span style="font-family:monospace">evolveDelayedStep()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+evolveDelayedStep
+</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<code>[acceptedChild,acceptedSequencesDelayed] = evolveDelayedStep(dreamPar,lastPointsFromEverySeq, propChildDelayed, propChild, acceptedChild, rejectedSeqIdx, alpha,alphaDelayed)</code>
+</div>
+
+<div class="h2">
+Input arguments
+</div>
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+<li><span class="code">lastPointsFromEverySeq</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the current points in each of the chains.
+<li> <span class="code">propChildDelayed</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the proposed points in each of the chains in the delayed step.
+<li> <span class="code">propChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the proposed points in each of the chains.
+<li> <span class="code">acceptedChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the accepted points in each of the chains.
+<li> <span class="code">rejectedSeqIdx</span> is a vector containing the indexes of the rejected sequences.
+<li> <span class="code">alpha</span> is the Metropolis acceptance probability.
+<li> <span class="code">alphaDelayed</span> is the Metropolis acceptance probability in the delayed step.
+</ul>
+</div>
+
+<div class="h2">
+Output arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">acceptedChild</span> contains the updated points in each of the chains.
+<li><span class="code">acceptedSequencesDelayed</span> is a vector of booleans that marks each chain for which the proposed point was accepted.
+</ul>
+</div>
+
+
+
+<div class="h2">
+Description
+</div>
+
+<div class="txt">
+This function evolves the chains rejected in the previous phase  through a Metropolis annealing scheme, that is by accepting or rejecting a proposed child based on (1) the objective score of that child and (2) an uniform random draw.
+ The acceptance probability of this second candidate point is computed so that reversibility of the Markov chain is preserved. 
+ Depending on how the annealing works out, the output variable <span style="font-family:monospace">acceptedChild</span> contains  either the proposed child <span style="font-family:monospace">propChildDelayed</span> 
+ in a chain, or old point in <span style="font-family:monospace">lastPointsFromEverySeq</span>.
+ <span style="font-family:monospace">acceptedChild</span> will be added to the <span style="font-family:monospace">sequences</span> and <span style="font-family:monospace">evalResults</span>variables later on 
+ during execution of the optimization code.
+
+</div>
+
+
+<div class="footer">
+</div>
+
+
+
+<div class="spacer">
+</div>
+
+
+<a name="_bottom"></a>
+
+
+</body>
+
+</html>

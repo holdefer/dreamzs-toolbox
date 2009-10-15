@@ -1,0 +1,668 @@
+function varargout = dreamzs(varargin)
+%
+% <a href="matlab:web(fullfile(dreamroot,'html','dream.html'),'-helpbrowser')">View HTML documentation for this function in the help browser</a>    
+% 
+% If you haven't used the dream documentation before, you need to 
+% install it by running >> dream -docinstall
+% <a href="matlab:dream -docinstall">Install documentation now</a>
+% 
+%
+% revision of DREAM_ZS algorithm by J.A. Vrugt
+%
+% Author         : Jurriaan H. Spaaks, Diana Gorea
+% Date           : July 2009
+% Matlab release : 2009a on Win32
+
+
+if ischar(varargin{1})
+    
+    dreamPar.verboseOutput = true;
+    if nargin>1 && ischar(varargin{2})
+        switch varargin{2}
+            case {'-q','-quiet'}
+                dreamPar.verboseOutput = false;
+            otherwise
+                dreamPar.verboseOutput = true;
+        end
+
+    end
+
+    switch varargin{1}
+        case '-docinstall'
+            try
+                try
+                    if dreamPar.verboseOutput
+                        dreamzs -addtools
+                    else
+                        dreamzs -addtools -quiet
+                    end
+
+                    fid=fopen(fullfile(dreamroot,'info.xml.template'),'r');
+                    textInfoXML='';
+                    while true
+                        tline = fgets(fid);
+                        if ischar(tline)
+                            textInfoXML = [textInfoXML,tline];
+                        else
+                            break
+                        end
+                    end
+                    fclose(fid);
+
+                    fid=fopen(fullfile(dreamroot,'info.xml'),'wt');
+                    fprintf(fid,textInfoXML,dreamroot);
+                    fclose(fid);
+
+                    if dreamPar.verboseOutput
+                        disp(['DREAM_ZS: ',char(39),'info.xml',char(39),' file ',...
+                            'written successfully. '])
+                    end
+
+                catch
+                    if dreamPar.verboseOutput
+                        warning('dream:writing_of_info_file',...
+                            ['An error occurred during writing ',...
+                            'of DREAM_ZS ',char(39),...
+                            'info.xml',char(39),' file'])
+                    end
+                end
+
+                % % % % % % % % % % % % info.xml is written
+
+                try
+                    
+                    Colors_M_CommentsStr = '228B22';
+                    Colors_M_StringsStr = 'A020F0';
+                    Colors_M_KeywordsStr = '0000FF';
+                    Colors_M_SystemCommandsStr = 'B28C00';                    
+
+                    fid=fopen(fullfile(prefdir,'matlab.prf'),'r');
+                    C = textscan(fid, '%s','delimiter','\r');
+                    fclose(fid);
+
+                    for k=1:numel(C{1})
+                        try
+                            MatlabVarName = strread(C{1}{k},'%[^=]',1);
+                            switch MatlabVarName{1}
+                                case 'Colors_M_Comments'
+                                    indColor = strread(C{1}{k},'%*[^=]%*[=]%s',1);
+                                    [r,g,b]=indexed2hexcolor(indColor{1});
+                                    Colors_M_CommentsStr =...
+                                        [dec2hex(r,2),dec2hex(g,2),dec2hex(b,2)];
+                                case 'Colors_M_Strings'
+                                    indColor = strread(C{1}{k},'%*[^=]%*[=]%s',1);
+                                    [r,g,b]=indexed2hexcolor(indColor{1});
+                                    Colors_M_StringsStr =...
+                                        [dec2hex(r,2),dec2hex(g,2),dec2hex(b,2)];
+                                case 'Colors_M_Keywords'
+                                    indColor = strread(C{1}{k},'%*[^=]%*[=]%s',1);
+                                    [r,g,b]=indexed2hexcolor(indColor{1});
+                                    Colors_M_KeywordsStr =...
+                                        [dec2hex(r,2),dec2hex(g,2),dec2hex(b,2)];
+                                case 'Colors_M_SystemCommands'
+                                    indColor = strread(C{1}{k},'%*[^=]%*[=]%s',1);
+                                    [r,g,b]=indexed2hexcolor(indColor{1});
+                                    Colors_M_SystemCommandsStr =...
+                                        [dec2hex(r,2),dec2hex(g,2),dec2hex(b,2)];
+                            end
+                        catch
+
+                        end
+                    end
+
+                    fid=fopen(fullfile(dreamroot,'html','styles',...
+                        'dream_styles.css.template'),'r');
+                    textStylesCSS='';
+                    while true
+                        tline = fgets(fid);
+                        if ischar(tline)
+                            textStylesCSS = [textStylesCSS,tline];
+                        else
+                            break
+                        end
+                    end
+                    fclose(fid);
+
+                    fid=fopen(fullfile(dreamroot,'html','styles',...
+                        'dream_styles.css'),'wt');
+                    fprintf(fid,textStylesCSS,...
+                        Colors_M_CommentsStr,...
+                        Colors_M_StringsStr,...
+                        Colors_M_KeywordsStr,...
+                        Colors_M_SystemCommandsStr);
+                    fclose(fid);
+
+                    if dreamPar.verboseOutput
+                        disp(['DREAM_ZS: ',char(39),'dream_styles.css',char(39),' has been updated successfully.'])
+                    end
+
+                catch
+                    if dreamPar.verboseOutput
+                        warning('dream:writing_of_styles_file',...
+                            ['An error occurred during writing ',...
+                            'of DREAM_ZS ',char(39),...
+                            'dream_styles.css',char(39),' file'])
+                    end
+                end
+
+                if dreamPar.verboseOutput
+                    disp(['Click on the MATLAB ',...
+                        'Start button->Desktop Tools->View Start Button Configuration Files...',...
+                        char(10),'...and click Refresh Start Button.'])
+                end
+            catch
+                
+            end
+
+
+        case '-addtools'
+            try
+
+                p = mfilename('fullpath');
+                u = findstr(p,mfilename);
+                addpath(fullfile(p(1:u-1),'tools'))
+                addpath(fullfile(p(1:u-1),'visualization'))
+                if dreamPar.verboseOutput
+                    disp('DREAM_ZS: tools should now be available.')
+                end
+
+            catch
+                if dreamPar.verboseOutput
+                    warning('dream:add_dream_tools',['An error occurred ',...
+                        'while trying to add ',char(10),...
+                        'the DREAM_ZS tools to the path.']) 
+                end
+            end
+        case '-help'
+            if dreamPar.verboseOutput
+                disp(['% dream -docinstall ',char(10),'%       adds some ',...
+                    'folders to the path, which contain helpful',char(10),...
+                    '%       functions, and installs the documentation by ',...
+                    'writing ',char(10),'%       the info.xml file.',...
+                    char([10,37,10]),'% dream -addtools ',...
+                    char(10),'%       adds some folders to the path, which c',...
+                    'ontain helpful',char(10),...
+                    '%       functions.',char([10,37,10]),'% dream ',...
+                    '-help ',char(10),'%       shows this help.'])
+            end
+         case '-showoptions'
+             C= authorizedFieldNames;
+             for k=1:numel(C)
+                 disp(C{k});
+             end
+        otherwise
+            if dreamPar.verboseOutput
+                warning('dream:DocInstall',['For installing the documen',...
+                    'tation, type >>dream -docinstall'])
+            end
+    end    
+    
+    
+elseif isstruct(varargin{1})
+
+    
+    % display disclaimer:
+    disp_disclaimer
+
+    dreamPar = varargin{1};
+
+    % verify the integrity of dreamPar's fieldnames:
+    verifyfieldnames(dreamPar)    
+    
+    % load default settings from file:
+    if isfield(dreamPar,'useIniFile')
+        dreamPar = loadsettings(dreamPar,dreamPar.useIniFile);
+    else
+        dreamPar = loadsettings(dreamPar,'dream-default-settings.ini');
+    end
+    
+    % initialize the uniform random generator:
+    try
+        rand('twister',dreamPar.randSeed);
+    catch
+        if dreamPar.verboseOutput
+            disp(['Using the rand seed method instead of the ',...
+                char(10),'default twister method. ',char(10),...
+                '<a href="matlab:doc rand">doc rand</a>'])
+        end
+        rand('seed',dreamPar.randSeed);
+    end
+
+
+    % initialize the Gaussian random generator:
+    try
+        randn('state',dreamPar.randSeed);        
+    catch
+        if dreamPar.verboseOutput
+            disp(['Using the randn state method instead of the ',...
+                char(10),'default twister method. ',char(10),...
+                '<a href="matlab:doc rand">doc rand</a>'])
+        end
+        randn('seed',dreamPar.randSeed);        
+    end
+    
+    if dreamPar.plotYN
+        subplotscreen(2,2,1)
+        subplotscreen(2,2,2)
+        subplotscreen(2,2,3)
+        subplotscreen(2,2,4)
+    end
+   
+   
+    
+    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % %      DREAM_ZS  INITIALIZATION FINISHED       % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+
+    % check if any inconsistencies can be identified from dreamPar's fields:
+    check_input_integrity(dreamPar)
+    
+    % Calculate the parameters in the exponential power density function:
+    [dreamPar.Cb,dreamPar.Wb] = calccbwb(dreamPar); 
+    
+    % Indicate the meaning of each column in 'evalResults':
+    dreamPar.iterCol = 1;                       % iteration
+    dreamPar.parCols = 2:1+dreamPar.nOptPars;   % model parameters 
+    dreamPar.objCol = 2 + dreamPar.nOptPars;    % objective statistic/score (proportional to density)
+    dreamPar.logPCol = 2+dreamPar.nOptPars +1;
+    dreamPar.evalCol = 2+dreamPar.nOptPars + 2; % whether the model has been evaluated with 
+                                                % the parameters in the current row 
+    
+    nElemOutput = ceil(dreamPar.nModelEvalsMax/dreamPar.nSeq);
+    
+    iteration = 0;
+
+
+    logpHistory = nan(floor(dreamPar.nModelEvalsMax/dreamPar.nSeq),dreamPar.nSeq);
+    deltaTot = zeros(1,dreamPar.nCrossoverValues);
+    pCrossoverHistory = nan(floor(dreamPar.nModelEvalsMax/dreamPar.nSeq),dreamPar.nCrossoverValues +1);
+    critGelRub = nan(nElemOutput, dreamPar.nOptPars+1);
+    acceptanceRate = nan(nElemOutput,2);
+    acceptanceRate(1,1:2) = [dreamPar.nSeq - 1];
+
+    % Calculate multinomial probabilities of each of the nCrossoverValues 
+    pCrossover = (1/dreamPar.nCrossoverValues) * ones(1,dreamPar.nCrossoverValues);
+    % Calculate the actual allCrossoverValues values based on p
+    [allCrossoverValues,crossoverCount] = generateCrossoverValues(dreamPar,pCrossover); 
+
+    
+    for i = 1:dreamPar.nDiffEvolPairs,
+        jumpRateTable(:,i) = 2.38./sqrt(2 * i * [1:dreamPar.nOptPars]'); 
+    end;
+    
+    pCrossoverHistory(1,1:size(pCrossover,2)+1) = [1 pCrossover]; 
+    
+    switch dreamPar.samplingMethod  
+        case 'covariance'
+            randomDraw = covRandomDraw(dreamPar);
+            evalResults = [repmat(NaN,[dreamPar.nSamples,1]),randomDraw(1:dreamPar.nSamples,:),...
+                           repmat([NaN,NaN,false],[dreamPar.nSamples,1])];
+            randomDraw = randomDraw(dreamPar.nSamples+1:end,:);
+            nModelEvals = 0;               
+            [evalResults,nModelEvals] = calcobjscore(dreamPar,evalResults,nModelEvals, iteration);
+
+            % partition 'evalResults' into sequences and initialize the sequences:
+            sequences = toSequences(dreamPar,evalResults);
+        case 'uniform'
+            % Uniform sampling of points in parameter space:
+            randomDraw = stratranddraw(dreamPar);
+            evalResults = [repmat(NaN,[dreamPar.nSamples,1]),randomDraw(1:dreamPar.nSamples,:),...
+                           repmat([NaN,NaN,false],[dreamPar.nSamples,1])];           
+            randomDraw = randomDraw(dreamPar.nSamples+1:end,:);
+            nModelEvals = 0;               
+            [evalResults,nModelEvals] = calcobjscore(dreamPar,evalResults,nModelEvals, iteration);
+
+            % partition 'evalResults' into sequences and initialize the sequences:
+            sequences = toSequences(dreamPar,evalResults);
+
+        case 'continue'
+            % continue with an earlier run
+            reply = input([char(10),'Please provide the filename of the *.mat ',...
+                           'file containing',char(10),'variables ',...
+                            char(39),'critGelRub',char(39),', ',...
+                            char(39),'evalResults',char(39),', and ',...
+                            char(39),'sequences',char(39),'.',char(10),'>> ']);
+            if exist(reply,'file')
+                eval(['load(',char(39),reply,char(39),',',...
+                    char(39),'critGelRub',char(39),',',...
+                    char(39),'evalResults',char(39),',',...
+                    char(39),'sequences',char(39),')'])
+            else
+                error('No such file exists on the path.')
+            end
+
+            nRecords = max(evalResults(:,dreamPar.iterCol));
+
+            % partition 'evalResults' into sequences:
+            newSequences = toSequences(dreamPar,evalResults);
+            dreamPar.converged = abortoptim(critGelRub,dreamPar);
+            % initialize the sequences:
+            if isempty(newSequences)
+                sequences = newSequences;
+                nModelEvals = max(evalResults(:,dreamPar.iterCol));
+            else
+                nTrownAway = mod(nRecords-dreamPar.nSamples,dreamPar.nOffspring);
+                nModelEvals = nRecords-nTrownAway;
+                if dreamPar.verboseOutput            
+                    disp(['Throwing away last ',num2str(nTrownAway), ' model evaluations.'])
+                    disp(['dream run continues at ',num2str(nModelEvals+1), ' model evaluations.'])    
+                end
+            end
+
+            if dreamPar.plotYN
+                eval(dreamPar.visualizationCall)
+            end
+
+    end
+    
+     % Save history log density of individual chains
+   % nRecords = max(evalResults(:,dreamPar.iterCol));
+    logpHistory(1,1:nModelEvals+1) = [1 evalResults(:,dreamPar.logPCol)'];
+    critGelRub(1,:) = [1,gelmanrubin(dreamPar,sequences)];
+    
+    lastPointsFromEverySeq = getLastPointsFromEverySeq(dreamPar,sequences);
+    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % %         DREAM_ZS  START OF MAIN LOOP         % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    
+    crtPastPointsCount = dreamPar.nInitialSamples;
+    [sequences,evalResults] = preAllocate(dreamPar,sequences,evalResults);
+    
+    while continueDream(dreamPar,nModelEvals)
+            totalAcceptedSequences = 0;
+  
+            for iOffspring = 1:dreamPar.nOffspringPerSeq
+                
+                iteration = iteration + 1;
+                
+                % propose offspring 
+                [propChild, allCrossoverValues(:,iOffspring), alpha_s] = generateOffspring(dreamPar,lastPointsFromEverySeq, randomDraw, jumpRateTable, allCrossoverValues(:,iOffspring));
+
+                % calculate objective for unevaluated rows of evalResults:
+                [propChild,nModelEvals] = calcobjscore(dreamPar,propChild,nModelEvals, iteration);
+
+                % evolve the sequences
+                [acceptedChild,alpha,acceptedSequences] = evolve(dreamPar,lastPointsFromEverySeq,propChild, alpha_s);
+               
+               
+                % add the accepted child to the 'evalResults' array:
+                 %evalResults(iteration*dreamPar.nSeq+1:(iteration+1)*dreamPar.nSeq, :) = acceptedChild;
+
+                
+                % add the accepted child to the 'sequences' array:
+               
+                [sequences,evalResults, updateIndex] = updateSequences(dreamPar, sequences, evalResults, acceptedChild, iOffspring, iteration);
+
+                if dreamPar.crossoverValuesTuning
+                    [deltaTot] = updateDelta(dreamPar,deltaTot,acceptedChild, lastPointsFromEverySeq,allCrossoverValues(:,iOffspring));
+                end;
+                
+                lastPointsFromEverySeq = acceptedChild;
+               
+                logpHistory(iteration,:) = [iteration * dreamPar.nSeq acceptedChild(:,dreamPar.logPCol)']; %iteration*dreamPar.nSeq 
+                
+                totalAcceptedSequences = totalAcceptedSequences + sum(acceptedSequences);
+                
+                % Check whether to append X to Z
+                if (mod(iOffspring,dreamPar.updateStatesFrequency) == 0),
+                    
+                    randomDraw(crtPastPointsCount + 1 : crtPastPointsCount + dreamPar.nSeq,:) = lastPointsFromEverySeq(:,dreamPar.parCols);
+                  
+                    crtPastPointsCount = crtPastPointsCount + dreamPar.nSeq;
+                end;
+                
+           end
+
+        % Check whether to update individual pCrossover values
+        if (iteration*dreamPar.nSeq <= 0.1 * dreamPar.nModelEvalsMax)
+            if dreamPar.crossoverValuesTuning
+                pCrossover = updatePCrossover(dreamPar,deltaTot,crossoverCount); 
+            end;
+        end;
+              
+        % Store Probability of individual crossover values
+        pCrossoverHistory(floor(iteration / dreamPar.nOffspringPerSeq)+1,:) = [iteration pCrossover];
+            
+        [allCrossoverValues,count] = generateCrossoverValues(dreamPar,pCrossover);
+        crossoverCount = crossoverCount + count;
+     
+        acceptanceRate(iteration,1:2) = [floor(iteration / dreamPar.nOffspringPerSeq)+1 100 * totalAcceptedSequences/(dreamPar.nSeq*dreamPar.nOffspringPerSeq)];
+         
+       %determine the Gelman-Rubin scale reduction (convergence) statistic:
+        critGelRub(floor(iteration / dreamPar.nOffspringPerSeq)+1,:) = [iteration,gelmanrubin(dreamPar,sequences(1:updateIndex,:,:))];
+            
+        if dreamPar.plotYN
+            eval(dreamPar.visualizationCall)
+        end
+
+
+        % determine whether all parameters meet the Gelman-Rubin scale
+        % reduction criterion
+        dreamPar.converged = abortoptim(critGelRub,dreamPar);
+
+    end
+    
+    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % %          DREAM_ZS END OF MAIN LOOP           % % % % % %    
+    % % % % % %                                             % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+    % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+
+    
+   firstNan = find(isnan(evalResults(:,1)),1,'first');
+   if ~isempty(firstNan)
+    evalResults = evalResults(1:firstNan-1,:);
+   end;
+   firstNan = find(isnan(acceptanceRate(:,1)),1,'first');
+   if ~isempty(firstNan)
+    acceptanceRate = acceptanceRate(1:firstNan-1,:);
+   end;
+   firstNan = find(isnan(sequences(:,1,1)),1,'first');
+   if ~isempty(firstNan)
+    sequences = sequences(1:firstNan-1,:,:);
+   end;
+   firstNan = find(isnan(critGelRub(:,1)),1,'first');
+   if ~isempty(firstNan)
+    critGelRub = critGelRub(1:firstNan-1,:);
+   end;
+   firstNan = find(isnan(pCrossoverHistory(:,1)),1,'first');
+   if ~isempty(firstNan)
+    pCrossoverHistory = pCrossoverHistory(1:firstNan-1,:);
+   end;
+   
+   switch nargout
+        case 2
+            varargout{1}=evalResults;
+            varargout{2}=critGelRub;
+        case 3
+            varargout{1}=evalResults;
+            varargout{2}=critGelRub;
+            varargout{3}=outliers;
+        case 4
+            varargout{1}=evalResults;
+            varargout{2}=critGelRub;
+            varargout{3}=sequences;   
+            varargout{4}=acceptanceRate;
+        case 5
+            varargout{1}=evalResults;
+            varargout{2}=critGelRub;
+            varargout{3}=sequences;   
+            varargout{4}=acceptanceRate;
+            varargout{5}=pCrossoverHistory;
+        case 6
+            varargout{1}=evalResults;
+            varargout{2}=critGelRub;
+            varargout{3}=sequences;   
+            varargout{4}=acceptanceRate;
+            varargout{5}=pCrossoverHistory;
+            varargout{6}=dreamPar;
+        otherwise
+            error(['Function ',39,mfilename,39,' has 2,3,4,5,6 or 7 output arguments.'])
+   end
+end
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+% % % % % %                                             % % % % % %    
+% % % % % %     DREAM_ZS LOCAL FUNCTIONS START HERE      % % % % % %    
+% % % % % %                                             % % % % % %    
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %    
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function check_input_integrity(dreamPar)
+
+if dreamPar.nSeq<2
+    error(['In order to determine the Gelman-Rubin convergence',10,...
+           'criterion, at least 2 sequences should be used.'])
+end
+
+x = dreamPar.nSamples/dreamPar.nSeq;
+if round(x)~=x
+    error(['Unable to uniformly distribute number of samples (',...
+           num2str(dreamPar.nSamples),') over the given number ',10,...
+           'of sequences (',num2str(dreamPar.nSeq),').'])
+elseif x<=0
+    error(['Variable ',39,'dreamPar.nSamples',39,' must be larger than zero.'])
+end
+
+x = dreamPar.nOffspring/dreamPar.nSeq;
+if round(x)~=x
+    error(['Unable to uniformly distribute number of offspring (',...
+           num2str(dreamPar.nOffspring),') over the given number ',10,...
+           'of sequences (',num2str(dreamPar.nSeq),').'])
+elseif x<=0
+    error(['Variable ',39,'dreamPar.nOffspring',39,' must be larger than zero.'])
+end
+
+
+if dreamPar.convUseLastFraction<=0
+    error(['Value of parameter ',39,'dreamPar.convUseLastFraction',39,' should be larger than 0.'])
+end
+
+if dreamPar.convUseLastFraction>1
+    error(['Value of parameter ',39,'dreamPar.convUseLastFraction',39,' should be smaller than or equal to 1.'])
+end
+
+if mod((dreamPar.nModelEvalsMax-dreamPar.nSamples),dreamPar.nOffspring)~=0
+    error(['Generating ',char(39),'dreamPar.nOffspring',char(39),...
+           ' (',num2str(dreamPar.nOffspring),') descendants per ',...
+           'generation will not ',char(10),'yield exactly ',char(39),...
+           'dreamPar.nModelEvalsMax',char(39),' (',...
+           num2str(dreamPar.nModelEvalsMax),') model evaluations ',...
+           'for any',char(10),'integer number of generations, given ',...
+           'that ',char(39),'dreamPar.nSamples',char(39),' equals ',...
+           num2str(dreamPar.nSamples),'.'])
+end
+
+if ~all(dreamPar.rangeMin<dreamPar.rangeMax)
+    error(['Domain boundaries incorrectly specified. Check parameters ',char(39),'dreamPar.rangeMin',char([39,10]),'and ',char(39),'dreamPar.rangeMax',char(39),'.'])
+end
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function disp_disclaimer
+
+disp([10,...
+      '% This is a pre-alpha release of the DREAM_ZS ',10,...
+      '% parameter optimization software.',10,10,...
+      '% See <a href=',34,'matlab:web(fullfile(dreamroot,',...
+      39,'html',39,',',39,'gpl.txt',39,'),',39,...
+      '-helpbrowser',39,')',34,'>link</a> for license.',10,10])
+
+
+% % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % % %
+function verifyfieldnames(dreamPar)
+authF = authorizedFieldNames;
+F = fieldnames(dreamPar);
+for k=1:numel(F)
+    if ~any(strcmp(F{k},authF))
+        error(['Unrecognized field ',char(39),F{k},char(39),...
+            ' in variable dreamPar.'])
+    end
+
+end
+
+function fields = authorizedFieldNames
+
+fields =...
+   {'Cb',...
+    'Wb',...
+    'boundHandling',...
+    'constNames',...
+    'convMaxDiff',...
+    'convUseLastFraction',...
+    'converged',...
+    'critGelRubConvd',...
+    'crossoverValuesTuning',...
+    'covariance',...
+    'dateStr',...
+    'drawInterval',...
+    'evalCol',...
+    'initialMean',...
+    'iterCol',...
+    'jumpRate',...
+    'keepInMemory',...
+    'kurt',...
+    'logPCol',...
+    'measNames',...
+    'modeGelRub',...
+    'modelCallStr',...
+    'nCrossoverValues',...
+    'nDiffEvolPairs',...
+    'nGelRub',...
+    'nInitialSamples',...
+    'nMeasurements',...
+    'nModelEvalsMax',...
+    'nOffspring',...
+    'nOffspringFraction',...
+    'nOffspringPerSeq',...
+    'nOptPars',...
+    'nSamples',...
+    'nSamplesPerSeq',...
+    'nSeq',...
+    'objCallStr',...
+    'objCol',...
+    'optEndTime',...
+    'optMethod',...
+    'parallelUpdateFraction',...
+    'parCols',...
+    'parMap',...
+    'parMapTex',...
+    'plotYN',...
+    'randomErgodicityError',...
+    'randomError',...
+    'randSeed',...
+    'rangeMax',...
+    'rangeMin',...
+    'reducedSampleCollection',...
+    'reducedSampleFrequency',...
+    'samplingMethod',...
+    'sigma',...
+    'startFromUniform',...
+    'steps',...
+    'thresholdL',...
+    'useIniFile',...
+    'updateStatesFrequency',...
+    'verboseOutput',...
+    'visualizationCall'};
+
+      
+      
+  
+  
+  

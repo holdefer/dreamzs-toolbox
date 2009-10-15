@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>DREAM Toolbox - generateOffspringDelayedStep</title>
+
+   <meta name="keywords" content="generateOffspringDelayedStep">
+
+   <meta name="description" content="generateOffspringDelayedStep">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'generateOffspringDelayedStep'))">View source code of the function <span style="font-family:monospace">generateOffspringDelayedStep()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+updateSequences
+</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<code>[sequences, wasLastPointStored] = updateSequences(dreamPar, sequences, acceptedChild, iteration)
+</code>
+</div>
+
+<div class="h2">
+Input arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+<li><span class="code">sequences</span> is a 3-dimensional array containing either all the points in each of the chains, 
+if <span class="code">dreamPar.reducedSampleCollection = false</span>, or every 
+<span class="code">dreamPar.reducedSampleFrequency</span>the point in each sequence, if <span class="code">dreamPar.reducedSampleCollection = true</span>.
+<li> <span class="code">acceptedChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the accepted points in each of the chains.
+<li> <span class="code">iteration</span> is the current iteration number.
+</ul>
+</div>
+
+<div class="h2">
+Output arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">sequences</span> is the updated sequences array.
+<li><span style="font-family:monospace">wasLastPointStored</span> is a boolean value that marks if the sequences array was updated
+(which is not always the case in the case of <span class="code">dreamPar.reducedSampleCollection = true</span>).
+</ul>
+</div>
+
+<div class="h2">
+Description
+</div>
+<div class="txt">
+Updates the sequences array by adding the last accepted points in each of the sequences. Whether a point is added or not depends of 
+the value of the <span class="code">dreamPar.reducedSampleCollection</span> parameter.
+</div>
+</body>
+</html>

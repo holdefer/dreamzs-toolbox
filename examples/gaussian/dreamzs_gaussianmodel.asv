@@ -1,0 +1,72 @@
+
+clear
+close all
+clc
+
+
+% define which parameters should be included in the optimization
+% and generate a map of where each entry of 'parVec' fits in the 
+% model structure under consideration.
+[dreamPar.parMap,dreamPar.parMapTex,...
+    dreamPar.rangeMin,dreamPar.rangeMax] = assignpars; 
+
+% define which model parameters are not included in the optimization:
+assignconstants
+dreamPar.constNames = modelConstantsNames;
+
+% % % % % % % % % % % % % 
+
+dreamPar.nSeq = 3;
+dreamPar.modelCallStr = 'modelResult = gaussianmodel(parVec);';
+dreamPar.objCallStr = '[objScore,logObjScore] = objectivefun(modelResult);';
+dreamPar.parallelUpdateFraction = 1;
+dreamPar.updateStatesFrequency = 10;
+dreamPar.nModelEvalsMax = 300100;
+% dreamPar.optMethod = 'direct probability';
+dreamPar.drawInterval = 4;
+dreamPar.nDiffEvolPairs = 3;
+dreamPar.samplingMethod = 'uniform';
+dreamPar.nCrossoverValues = 3;  
+dreamPar.crossoverValuesTuning = true;
+dreamPar.kurt = 0;
+dreamPar.boundHandling = 'None';    
+dreamPar.reducedSampleCollection = true;
+dreamPar.reducedSampleFrequency = 1e4;
+dreamPar.randomErgodicityError = 5e-2; 
+dreamPar.optMethod = 4;
+dreamPar.nOffspringPerSeq = 500;
+dreamPar.nModelEvalsMax = 3e4+100;
+dreamPar.plotYN=false;
+dreamPar.nInitialSamples = 1000;
+
+
+ 
+
+    
+ 
+ 
+
+    % ---------------------- Define covariance matrix ---------------------
+    % Construct the dxd correlation matrix
+    A = 0.5*eye(MCMCPar.n) + 0.5*ones(MCMCPar.n);
+    % Rescale to variance-covariance matrix of interest
+    for i=1:MCMCPar.n
+        for j=1:MCMCPar.n
+            C(i,j) = A(i,j)*sqrt(i*j);
+        end
+    end
+    % Set to Extra
+    Extra.qcov = C; Extra.muX = zeros(1,MCMCPar.n); Extra.invC = inv(C);
+    % ---------------------------------------------------------------------
+
+    Extra.save_in_memory = 'No';
+    % Define data structures for use in computation of posterior density
+    Measurement.MeasData = []; Measurement.Sigma = []; Measurement.N = size(Measurement.MeasData,1);
+    % Define the example specific properties used to compute output
+    Extra.mu = zeros(1,MCMCPar.n);          % Center point
+    % What type of initial sampling
+    Extra.InitPopulation = 'LHS_BASED';
+
+
+[evalResults,critGelRub,sequences,acceptanceRate, pCrossoverHistory, dreamPar] = dreamzs(dreamPar);
+

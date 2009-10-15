@@ -1,0 +1,108 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+
+   <title>DREAM Toolbox - evolve</title>
+
+   <meta name="keywords" content="evolve">
+
+   <meta name="description" content="evolve">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Jurriaan H. Spaaks">
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'evolve'))">View source code of the function <span style="font-family:monospace">evolve()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+evolve
+</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<pre>[acceptedChild,alpha,acceptedSequences] = evolve(dreamPar,lastPointsFromEverySeq,propChild, alphaSnooker)</pre>
+</div>
+
+<div class="h2">
+Input arguments
+</div>
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+<li><span class="code">lastPointsFromEverySeq</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the current points in each of the chains.
+<li> <span class="code">propChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the proposed points in each of the chains.
+<li> <span class="code">alphaSnooker</span> is an array of <code>dreamPar.nSeq</code> elements containing the ratios calculated in the 
+<a href="matlab:web(fullfile(dreamroot,'html','evolve.html'),'-helpbrowser')"><code>generateOffspring</code></a> function, for the 
+snooker update case. In the case of parallel update, all the values are <code>1</code>.
+</ul>
+</div>
+
+<div class="h2">
+Output arguments
+</div>
+
+<div class="txt">
+<ul>
+<li> <span class="code">acceptedChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the accepted points in each of the chains.
+<li> <span class="code">alpha</span> is the Metropolis acceptance probability.
+<li><span class="code">acceptedSequences</span> is a vector of booleans that marks each chain for which the proposed point was accepted.
+</ul>
+</div>
+
+
+<div class="h2">
+Description
+</div>
+
+<div class="txt">
+This function evolves each of the chains through a Metropolis annealing scheme, that is by accepting or rejecting a proposed child based on (1) the objective score of that child and (2) an uniform random draw. 
+Output variable <span style="font-family:monospace">acceptedChild</span> contains the updated points in each of the chains. Depending on how the annealing works out,
+ <span style="font-family:monospace">acceptedChild</span> contains  either the proposed child <span style="font-family:monospace">propChild</span> in a chain, or a point in
+ <span style="font-family:monospace">lastPointsFromEverySeq</span>.
+ If the delayed rejection is enabled, the rejected points (i.e the points retained from <span style="font-family:monospace">lastPointsFromEverySeq</span>)  from <span style="font-family:monospace">acceptedChild</span>
+  might be replaced with newly generated points in the delayed rejection step. Ultimately it will be added to the <span style="font-family:monospace">sequences</span> and <span style="font-family:monospace">evalResults</span>variables later on 
+ during execution of the optimization code.
+ <span class="code">alpha</span> represents the Metropolis acceptance probability, computed based on the objective scores of the old and the new point.
+ The output argument <span class="code">acceptedSequences</span> is a vector of booleans that marks each chain for which the proposed point was accepted.
+</div>
+
+
+<div class="footer">
+</div>
+
+
+
+<div class="spacer">
+</div>
+
+
+<a name="_bottom"></a>
+
+
+</body>
+
+</html>

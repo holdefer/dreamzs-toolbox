@@ -1,0 +1,448 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html>
+
+<head>
+
+   <title>DREAM Toolbox - dream</title>
+
+   <meta name="keywords" content="dream">
+
+   <meta name="description" content="dream">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Jurriaan H. Spaaks">
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'dream'))">View source code of the function <span style="font-family:monospace">dream()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+dream</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<pre>
+dream <span class="string">-addtools</span>
+dream <span class="string">-addtools -quiet</span>
+dream <span class="string">-docinstall</span>
+dream <span class="string">-docinstall -quiet</span>
+dream <span class="string">-showoptions</span>
+dream <span class="string">-help</span>
+[evalResults,critGelRub,sequences,acceptanceRate, pCrossoverHistory, dreamPar] = dreamzs(dreamPar)
+</pre>
+</div>
+
+<div class="h2">
+Input
+</div>
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+</ul>
+</div>
+
+<div class="h2">
+Output
+</div>
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">evalResults</span> is a matrix containing all the points that were generated during the algorithm, including the objective scores.
+<li><span style="font-family:monospace">critGelRub</span> is a matrix with <span class="code">dreamPar.nOptPars+1</span> columns representing the Gelman Rubin statistic value at different iterations during the algorithm.
+<li><span class="code">sequences</span> is a 3-dimensional array containing either all the points in each of the chains, 
+if <span class="code">dreamPar.reducedSampleCollection = false</span>, or every 
+<span class="code">dreamPar.reducedSampleFrequency</span>the point in each sequence, if <span class="code">dreamPar.reducedSampleCollection = true</span>.
+<li><span style="font-family:monospace">acceptanceRate</span> is a <code>2</code>-column array containing for each generation, the ratio between the number of accepted points out of the total number of proposed points.
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm, containing also added/modified fields during the algorithm.
+</ul>
+</div>
+
+<div class="h2">
+Description
+</div>
+
+<div class="txt">
+<p>
+   <span style="font-family:monospace">dream <span class="string">-addtools</span></span>
+</p>
+
+<p>
+   Makes the DREAM related tools available by adding the <span style="font-family:monospace">dream/tools</span> directory to the path.
+</p>
+</div>
+
+
+
+<div class="txt">
+<p>
+   <span style="font-family:monospace">dream <span class="string">-addtools -quiet</span></span>
+</p>
+
+<p>
+   Same as <span style="font-family:monospace">dream <span class="string">-addtools</span></span>, but without any verbose feedback.
+</p>
+</div>
+
+
+<div class="txt">
+<span style="font-family:monospace">dream <span class="string">-docinstall</span></span>
+<p>
+   Installs the documentation by writing the &#0039;info.xml&#0039; file; applies the user-defined syntax highlighting by writing the 'dream_styles.css' style sheet file; adds the <span style="font-family:monospace">dream/tools</span> and <span style="font-family:monospace">dream/visualization</span> directories to the path by calling <span style="font-family:monospace">dream <span class="string">-addtools -quiet</span></span>.
+</p>
+
+</div>
+
+<div class="txt">
+<p>
+   <span style="font-family:monospace">dream <span class="string">-docinstall -quiet</span></span>
+</p>
+<p>
+   Same as <span style="font-family:monospace">dream <span class="string">-docinstall</span></span>, but without any verbose feedback.
+</p>
+</div>
+
+<div class="txt">
+<p>
+   <span style="font-family:monospace">dream <span class="string">-help</span></span>
+</p>
+<p>
+   Prints a help message to the screen.
+</p>
+</div>
+
+
+<div class="txt">
+<p>
+   <span style="font-family:monospace">[evalResults,critGelRub,outliers,sequences,acceptanceRate, pCrossoverHistory, dreamPar] = dream(dreamPar)</span>
+</p>
+
+<p>
+Calls the DREAM parameter optimization algorithm with the options specified in the <span style="font-family:monospace">&#0039;dreamPar&#0039;</span> structure array. The table below lists what fields can be included in <span style="font-family:monospace">dreamPar</span>. Fields can be of various types: 
+</p>
+<ul>
+<li>U for user defined;</li>
+<li>N for not user defined;</li>
+<li>O for optional;</li>
+<li>R for required.</li>
+</ul>
+
+<p>
+Fields that not assigned by the user will be assigned their default values, which are listed in the file &#0039;<span style="font-family:monospace">dream/dream-default-settings.ini</span>&#0039; or in the file as specified in <span style="font-family:monospace">dreamPar.useIniFile</span>.
+</p>
+
+</div>
+
+
+<div class="txt">
+<table>
+<tr>
+    <td valign="top"><b>Field name</b></td>
+    <td valign="top"><b>Type</b></td>
+    <td valign="top"><b>Description</b></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;Wb&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Parameter related to the kurtosis (aka peakedness) of the exponential power distribution. See also <span style="font-family:monospace">&#0039;dreamPar.kurt&#0039;</span>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;boundHandling&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top"></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;constNames&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Cell array of strings containing the names of variables which must be imported as constants during the optimization procedure.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;convMaxDiff&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">If the last <span style="font-family:monospace">dreamPar.nGelRub</span> rows from <span style="font-family:monospace">critGelRub</span> are less than <span style="font-family:monospace">convMaxDiff</span> apart, <a href="convergence.html">convergence</a> has been achieved.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;convUseLastFraction&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Indicates what fraction of <span style="font-family:monospace">sequences</span> should be used to calculate the Gelman-Rubin scale reduction criterion <span style="font-family:monospace">critGelRub</span>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;converged&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Signifies whether the optimization has converged (<span style="font-family:monospace">true</span>) or not (<span style="font-family:monospace">false</span>). Default is <span style="font-family:monospace">false</span>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;critGelRubConvd&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Convergence can only be achieved if all rows in <span style="font-family:monospace">critGelRub</span> are smaller than <span style="font-family:monospace">dreamPar.critGelRubConvd</span>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;crossoverValuesTuning&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">A boolean specifying if the crossover probabilities are updated after each iteration. Defaults to <code>true</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;covariance&#0039;</span></pre></td>
+    <td valign="top">U,(R)</td>
+    <td valign="top">The covariance matrix based on which the initial population is generated. It is necessary only if the <code>samplingMethod = 'covariance'</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;drawInterval&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Indicates after how many generations the dynamic visualization script is called. See also: <span style="font-family:monospace">&#0039;dreamPar.visualizationCall&#0039;</span></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;evalCol&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Indicates which column in <span style="font-family:monospace">evalResults</span> contains the &#0039;evaluated&#0039; flag. This flag is set to <span style="font-family:monospace">true</span> if the parameter on the current row has been evaluated, and is <span style="font-family:monospace">false</span> otherwise.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;initialMean&#0039;</span></pre></td>
+    <td valign="top">U,(R)</td>
+    <td valign="top"> The mean used to generate the initial population. It is necessary only if the <code>samplingMethod = 'covariance'</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nInitialSamples&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">The size of the initial population of current and past points, used in the differential evolution step to generate new offspring. Defaults to <code>10 * dreamPar.nSamples</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;iterCol&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Indicates which column in <span style="font-family:monospace">evalResults</span> is used to store the iteration number. Each parameter set is assigned its own iteration number.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;jumpRate&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">A scaling factor imposed on the covariance matrix. The product of these two, together with an n-dimensional random normal draw is used to calculate the jumping distance.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;kurt&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Measure of kurtosis (peakedness) of the exponential power probability distribution. The probability is Gaussian if kurtosis equals zero, double exponential if kurtosis is equal to one, and tends to a uniform distribution as kurtosis approaches -1. Default is 0.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;logPCol&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Indicates which column in <span style="font-family:monospace">evalResults</span> contains the logarithm of the objective score.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;measNames&#0039;</span></pre></td>
+    <td valign="top">U,(R)</td>
+    <td valign="top">Cell array of strings containing the names of variables which must be imported as measurements during the optimization procedure. Required only when <span style="font-family:monospace">dreamPar.optMethod</span> has been set to &#0039;<span style="font-family:monospace">error minimization</span>&#0039;.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;modeGelRub&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Flag indicating the method according to which the Gelman-Rubin scale reduction criterion should be calculated.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;modelCallStr&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Character array containing the call to the model function.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nCrossoverValues&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">The number of crossover values used by the algorithm, which is used to determine the crossover probabilities for each sequence. Defaults to <code>3</code>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nDiffEvolPairs&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">The number of pairs of distinct sequences used in the differential evolution strategy. Defaults to <code>floor((dreamPar.nOptPars-1)/2)</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nGelRub&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Indicates how many rows of <span style="font-family:monospace">critGelRub</span> should be used to determine if <a href="convergence.html">convergence</a> has been achieved.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nMeasurements&#0039;</span></pre></td>
+    <td valign="top">U,(R)</td>
+    <td valign="top">Number of observations. Required only when <span style="font-family:monospace">dreamPar.optMethod</span> has been set to &#0039;<span style="font-family:monospace">error minimization</span>&#0039;.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nModelEvalsMax&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Maximum number of model evaluations to be executed by DREAM.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nOffspring&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Number of offspring per generation.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nOffspringFraction&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Fraction of the number of samples (<span style="font-family:monospace">dreamPar.nSamples</span>).</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nOffspringPerSeq&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Number of offspring per sequence.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nOptPars&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">The number of optimized parameters.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nSamples&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Number of samples. Defaults to <code>dreamPar.nSeq.</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nSamplesPerSeq&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Number of samples per sequence.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;nSeq&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Number of Markov chains, or equivalently,  number of sequences. Defaults to <code>dreamPar.nOptPars</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;objCallStr&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Character array containing the call to the <a href="objective-function.html">objective function</a>.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;objCol&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Signifies which column of <span style="font-family:monospace">evalResults</span> stores the objective score.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;optEndTime&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">The time at which the optimization procedure should be aborted, even if convergence has not been achieved.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;optMethod&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Signifies what kind of optimization should be performed: 'direct probability', 'log likelihood', 'error minimization', 'log direct probability', 'weighted error minimization'.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;parallelUpdateFraction&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Represents the fraction of times the parallel offspring generation is executed relative to the snooker update offspring generation.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;parCols&#0039;</span></pre></td>
+    <td valign="top">N</td>
+    <td valign="top">Signifies which columns of <span style="font-family:monospace">evalResults</span> store the parameter sets.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;parMap&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Cell array of strings containing the names of variables which must be imported as parameters during the optimization procedure.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;parMapTex&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Cell array of TeX strings used in dynamic visualization.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;plotYN&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Logical flag indicating whether or not visualization should be performed during optimization.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;randSeed&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Random seed for MATLAB's <span style="font-family:monospace">rand()</span> and <span style="font-family:monospace">randn()</span> functions.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;rangeMax&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Maximum allowed values for all optimized parameters.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;rangeMin&#0039;</span></pre></td>
+    <td valign="top">U,R</td>
+    <td valign="top">Minimum allowed values for all optimized parameters.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;randomErgodicityError&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Numeric value used in the offspring generation step to achieve ergodicity. Defaults to <code>5e-2</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;reducedSampleCollection&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">A boolean specifying if the <code>sequences</code> output array retains only a reduced subset of the points generated during the optimization. Defaults to <code>true</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;reducedSampleFrequency&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">An integer value representing the fraction of the population that is retained in the <code>sequences</code> array during optimization. It is used only if <code>dreamPar.reducedSampleCollection=true.</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;samplingMethod&#0039;</span></pre></td>
+    <td valign="top">U, O</td>
+    <td valign="top">The method to sample the initial population of points. Can be one of <code>'uniform'</code>(drawn from an uniform prior probability distribution), <code>'covariance'</code> or <code>'continue'</code>(continue with an earlier run, in which a number of points were already generated). Defaults to <code>'uniform'</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;sigma&#0039;</span></pre></td>
+    <td valign="top">U,(R)</td>
+    <td valign="top">The measurement error, used to weigh the Metropolis acceptance probability. It is necessary only when the <code>dreamPar.optMethod = 'weighted error minimization'</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;updateStatesFrequency&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">An integer stating the frequency with which the current and past set of points are updated. Defaults to <code>10</code></td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;useIniFile&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">File from which to read DREAM's default settings.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;verboseOutput&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Logical flag indicating if verbose feedback should be output to the screen.</td>
+</tr>
+<tr>
+    <td valign="top"><pre><span class="string">&#0039;visualizationCall&#0039;</span></pre></td>
+    <td valign="top">U,O</td>
+    <td valign="top">Character array containing the call to the visualization script.</td>
+</tr>
+</table>
+</div>
+
+
+
+<div class="footer">
+</div>
+
+
+<div class="spacer">
+</div>
+
+
+<a name="_bottom"></a>
+
+
+</body>
+
+</html>

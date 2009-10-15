@@ -1,0 +1,82 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <title>DREAM Toolbox - reflectBounds</title>
+
+   <meta name="keywords" content="reflectBounds">
+
+   <meta name="description" content="reflectBounds">
+
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+  
+   <meta name="robots" content="index, follow">
+
+   <meta author="Diana Gorea">
+
+   <link type="text/css" rel="stylesheet" href="styles/dream_styles.css">
+ 
+</head>
+
+
+
+<body>
+<a name="_top"></a>
+
+<div class="linkheader">
+<a href="matlab:edit(fullfile(dreamroot,'reflectBounds'))">View source code of the function <span style="font-family:monospace">reflectBounds()</span> in the MATLAB editor</a><br><br>
+<a href="matlab:web(fullfile(dreamroot,'html','contents.html'),'-helpbrowser')">Toolbox contents</a>
+</div>
+
+<div class="spacer">
+</div>
+
+
+<div class="h1">
+reflectBounds
+</div>
+
+<div class="h2">
+Syntax
+</div>
+
+<div class="txt">
+<pre>
+[propChild] = reflectBounds(propChild,dreamPar)
+</pre>
+</div>
+<div class="h2">
+Input arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">dreamPar</span> is a structure containing the parameters of the DREAM algorithm.
+<li><span class="code">propChild</span> is a matrix with <span class = "code">dreamPar.nSeq</span> rows containing the proposed points in each of the chains.
+</ul>
+</div>
+
+<div class="h2">
+Output arguments
+</div>
+
+<div class="txt">
+<ul>
+<li><span style="font-family:monospace">propChild</span> contains the modified proposed points in each of the chains.
+</ul>
+</div>
+
+<div class="h2">
+Description
+</div>
+
+<div class="txt">
+This function checks whether the proposed points in every chain are within bounds and, if not, reflects the point against the respective 
+bound. If, after applying this step, the new point is still outside the boundaries, a random point within boundaries is generated.
+</div>
+
+<div class="txt">
+
+</div>
+
+</body>
+</html>
